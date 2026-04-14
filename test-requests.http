@@ -1,0 +1,215 @@
+### LangChain4j Demo - Test Requests
+
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### ============================================
+### Demo Endpoints
+### ============================================
+
+### Get Demo Info
+GET {{baseUrl}}/api/demo/info
+
+### Run All Demos (This will take a minute)
+GET {{baseUrl}}/api/demo/all
+
+### ============================================
+### Simple Chat Endpoints
+### ============================================
+
+### Simple Chat - Basic Question
+POST {{baseUrl}}/api/chat/simple
+Content-Type: {{contentType}}
+
+{
+  "message": "What is LangChain4j in one sentence?"
+}
+
+### Simple Chat - Technical Question
+POST {{baseUrl}}/api/chat/simple
+Content-Type: {{contentType}}
+
+{
+  "message": "Explain Java Streams API"
+}
+
+### Chat with System Message
+POST {{baseUrl}}/api/chat/system
+Content-Type: {{contentType}}
+
+{
+  "systemMessage": "You are a helpful Java expert. Be concise and technical.",
+  "userMessage": "What is Spring Boot?"
+}
+
+### ============================================
+### AI Assistant Endpoints
+### ============================================
+
+### AI Assistant Chat
+POST {{baseUrl}}/api/chat/assistant
+Content-Type: {{contentType}}
+
+{
+  "message": "What are the benefits of using microservices?"
+}
+
+### Greet User
+POST {{baseUrl}}/api/chat/greet
+Content-Type: {{contentType}}
+
+{
+  "name": "Alice"
+}
+
+### Translate to Spanish
+POST {{baseUrl}}/api/chat/translate
+Content-Type: {{contentType}}
+
+{
+  "text": "Hello, how are you today?",
+  "language": "Spanish"
+}
+
+### Translate to French
+POST {{baseUrl}}/api/chat/translate
+Content-Type: {{contentType}}
+
+{
+  "text": "Good morning, welcome to our application",
+  "language": "French"
+}
+
+### Translate to German
+POST {{baseUrl}}/api/chat/translate
+Content-Type: {{contentType}}
+
+{
+  "text": "Thank you for using our service",
+  "language": "German"
+}
+
+### ============================================
+### RAG Endpoints
+### ============================================
+
+### Ingest Sample Documents - Java & Spring
+POST {{baseUrl}}/api/rag/ingest
+Content-Type: {{contentType}}
+
+{
+  "documents": [
+    "Java is a high-level, class-based, object-oriented programming language. It was developed by Sun Microsystems and released in 1995. Java applications are compiled to bytecode that can run on any Java Virtual Machine (JVM).",
+    "Spring Boot is an open-source Java framework that simplifies the development of production-ready applications. It provides auto-configuration, embedded servers, and starter dependencies to reduce boilerplate code.",
+    "LangChain4j is a Java library that makes it easy to integrate Large Language Models into Java applications. It provides abstractions for common LLM patterns like chat, embeddings, and RAG.",
+    "Maven is a build automation and project management tool for Java projects. It uses XML configuration (pom.xml) to manage dependencies, build lifecycle, and project structure.",
+    "Microservices architecture is a design approach where applications are built as a collection of small, independent services. Each service runs in its own process and communicates via lightweight protocols like HTTP."
+  ]
+}
+
+### Ingest Sample Documents - AI & ML
+POST {{baseUrl}}/api/rag/ingest
+Content-Type: {{contentType}}
+
+{
+  "documents": [
+    "RAG (Retrieval Augmented Generation) is a technique that combines information retrieval with text generation. It retrieves relevant documents from a knowledge base and uses them as context for the LLM to generate more accurate responses.",
+    "Vector embeddings are numerical representations of text that capture semantic meaning. They are created by neural networks and enable semantic search by finding similar content based on meaning rather than exact keyword matches.",
+    "Large Language Models (LLMs) are AI models trained on vast amounts of text data. They can understand and generate human-like text, perform various NLP tasks, and reason about complex topics.",
+    "Prompt engineering is the practice of designing effective prompts to get desired outputs from LLMs. It involves crafting clear instructions, providing context, and using techniques like few-shot learning.",
+    "Token is the basic unit of text that LLMs process. A token can be a word, part of a word, or punctuation. Most LLMs have a maximum context window measured in tokens (e.g., 4096, 8192, or 128000 tokens)."
+  ]
+}
+
+### Query RAG - About Java
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "What is Java?"
+}
+
+### Query RAG - About Spring Boot
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "What is Spring Boot and what are its benefits?"
+}
+
+### Query RAG - About RAG
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "Explain RAG and how it works"
+}
+
+### Query RAG - About Vector Embeddings
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "What are vector embeddings?"
+}
+
+### Query RAG - About LangChain4j
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "What is LangChain4j used for?"
+}
+
+### Query RAG - About Microservices
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": "What is microservices architecture?"
+}
+
+### Get RAG Statistics
+GET {{baseUrl}}/api/rag/stats
+
+### ============================================
+### Test Sequence for Demo
+### ============================================
+
+### 1. First, ingest some documents
+# POST {{baseUrl}}/api/rag/ingest (use one of the above)
+
+### 2. Then query without RAG to see the difference
+# POST {{baseUrl}}/api/chat/simple
+
+### 3. Finally query with RAG to see improved response
+# POST {{baseUrl}}/api/rag/query
+
+### ============================================
+### Error Testing
+### ============================================
+
+### Test Empty Message
+POST {{baseUrl}}/api/chat/simple
+Content-Type: {{contentType}}
+
+{
+  "message": ""
+}
+
+### Test Missing Question
+POST {{baseUrl}}/api/rag/query
+Content-Type: {{contentType}}
+
+{
+  "question": ""
+}
+
+### Test Empty Documents
+POST {{baseUrl}}/api/rag/ingest
+Content-Type: {{contentType}}
+
+{
+  "documents": []
+}
