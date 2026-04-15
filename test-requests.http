@@ -52,7 +52,7 @@ POST {{baseUrl}}/api/chat/assistant
 Content-Type: {{contentType}}
 
 {
-  "message": "What are the benefits of using microservices?"
+  "message": "What do you know about LangChain4j?"
 }
 
 ### Greet User
@@ -60,7 +60,7 @@ POST {{baseUrl}}/api/chat/greet
 Content-Type: {{contentType}}
 
 {
-  "name": "Alice"
+  "name": "Pardhiv"
 }
 
 ### Translate to Spanish
@@ -69,7 +69,7 @@ Content-Type: {{contentType}}
 
 {
   "text": "Hello, how are you today?",
-  "language": "Spanish"
+  "language": "Malayalam"
 }
 
 ### Translate to French
@@ -100,74 +100,58 @@ Content-Type: {{contentType}}
 
 {
   "documents": [
-    "Java is a high-level, class-based, object-oriented programming language. It was developed by Sun Microsystems and released in 1995. Java applications are compiled to bytecode that can run on any Java Virtual Machine (JVM).",
-    "Spring Boot is an open-source Java framework that simplifies the development of production-ready applications. It provides auto-configuration, embedded servers, and starter dependencies to reduce boilerplate code.",
-    "LangChain4j is a Java library that makes it easy to integrate Large Language Models into Java applications. It provides abstractions for common LLM patterns like chat, embeddings, and RAG.",
-    "Maven is a build automation and project management tool for Java projects. It uses XML configuration (pom.xml) to manage dependencies, build lifecycle, and project structure.",
-    "Microservices architecture is a design approach where applications are built as a collection of small, independent services. Each service runs in its own process and communicates via lightweight protocols like HTTP."
+    "Pardhiv Krishna is a software engineer based in India. He is actively involved in backend development and works with Java technologies.",
+    "Pardhiv is currently exploring LangChain4j to integrate Large Language Models into Java applications for building intelligent systems.",
+    "He completed his graduation in B.Tech Computer Science Engineering with a specialization in Artificial Intelligence from Muthoot Institute of Technology and Science.",
+    "Pardhiv is currently working at IBM on the WebSphere and Liberty projects.",
+    "In his free time, Pardhiv enjoys watching movies, playing cricket, and video games."
   ]
 }
 
-### Ingest Sample Documents - AI & ML
+### Ingest Sample Documents - TechNova
 POST {{baseUrl}}/api/rag/ingest
 Content-Type: {{contentType}}
 
 {
   "documents": [
-    "RAG (Retrieval Augmented Generation) is a technique that combines information retrieval with text generation. It retrieves relevant documents from a knowledge base and uses them as context for the LLM to generate more accurate responses.",
-    "Vector embeddings are numerical representations of text that capture semantic meaning. They are created by neural networks and enable semantic search by finding similar content based on meaning rather than exact keyword matches.",
-    "Large Language Models (LLMs) are AI models trained on vast amounts of text data. They can understand and generate human-like text, perform various NLP tasks, and reason about complex topics.",
-    "Prompt engineering is the practice of designing effective prompts to get desired outputs from LLMs. It involves crafting clear instructions, providing context, and using techniques like few-shot learning.",
-    "Token is the basic unit of text that LLMs process. A token can be a word, part of a word, or punctuation. Most LLMs have a maximum context window measured in tokens (e.g., 4096, 8192, or 128000 tokens)."
+    "TechNova Systems has developed a platform called QuantumSync Engine to optimize cloud workloads using predictive scaling.",
+    "QuantumSync Engine has three main modules: SyncCore, LoadBalancerX, and PredictAI.",
+    "The internal testing identifier for QuantumSync Engine is QSE-9981-X.",
+    "TechNova uses a deployment validation process called GreenGate Validation to ensure zero-downtime releases.",
+    "In case of failures, the emergency rollback keyword used is RED-FLAG-77."
   ]
 }
 
-### Query RAG - About Java
+### Query RAG - About Pardhiv
 POST {{baseUrl}}/api/rag/query
 Content-Type: {{contentType}}
 
 {
-  "question": "What is Java?"
+  "question": "Who is Pardhiv?"
 }
 
-### Query RAG - About Spring Boot
+### Query RAG - About Pardhiv's graduation
 POST {{baseUrl}}/api/rag/query
 Content-Type: {{contentType}}
 
 {
-  "question": "What is Spring Boot and what are its benefits?"
+  "question": "What did Pardhiv do for graduation?"
 }
 
-### Query RAG - About RAG
+### Query RAG - About QuantumSync Engine
 POST {{baseUrl}}/api/rag/query
 Content-Type: {{contentType}}
 
 {
-  "question": "Explain RAG and how it works"
+  "question": "What is QuantumSync Engine?"
 }
 
-### Query RAG - About Vector Embeddings
+### Query RAG - About QuantumSync Engine testing identifier
 POST {{baseUrl}}/api/rag/query
 Content-Type: {{contentType}}
 
 {
-  "question": "What are vector embeddings?"
-}
-
-### Query RAG - About LangChain4j
-POST {{baseUrl}}/api/rag/query
-Content-Type: {{contentType}}
-
-{
-  "question": "What is LangChain4j used for?"
-}
-
-### Query RAG - About Microservices
-POST {{baseUrl}}/api/rag/query
-Content-Type: {{contentType}}
-
-{
-  "question": "What is microservices architecture?"
+  "question": "What is the testing identifier used for QuantumSync Engine?"
 }
 
 ### Get RAG Statistics

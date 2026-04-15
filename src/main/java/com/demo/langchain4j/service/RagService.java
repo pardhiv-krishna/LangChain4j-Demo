@@ -4,76 +4,39 @@ import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
-import dev.langchain4j.rag.content.retriever.ContentRetriever;
-import dev.langchain4j.service.AiServices;
-import dev.langchain4j.service.SystemMessage;
-import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.model.output.Response;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * RAG Service - AI Services Pattern
- * Key features:
- * - Uses AI Services pattern with interface
- * - Automatic RAG with ContentRetriever
- * - System message defines behavior
- * - No manual prompt building needed!
+ * RAG Service - Manual Implementation
+ * Demonstrates the complete RAG pipeline step-by-step:
+ * 1. Embed the question
+ * 2. Search for relevant documents
+ * 3. Build prompt with context
+ * 4. Generate response
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RagService {
 
+    private final ChatLanguageModel chatLanguageModel;
     private final EmbeddingModel embeddingModel;
     private final EmbeddingStore<TextSegment> embeddingStore;
-    private final RagAssistant ragAssistant;
-
-    interface RagAssistant {
-        
-        @SystemMessage("""
-                Use ONLY the information from the context to answer questions.
-                If the context doesn't contain the answer, say "I don't have enough information to answer that question."
-                Be concise and accurate. Do not make up information
-                """)
-        String answer(@UserMessage String question);
-    }
-
-    /**
-     * Constructor - Creates RAG-enabled AI Service
-     *
-     * @param chatLanguageModel The LLM for generating responses
-     * @param embeddingModel The model for creating embeddings
-     * @param embeddingStore The vector store (pgVectorEmbeddingStore or inMemoryEmbeddingStore)
-     * @param contentRetriever The retriever that handles embedding + search automatically
-     */
-    public RagService(
-            ChatLanguageModel chatLanguageModel,
-            EmbeddingModel embeddingModel,
-            @Qualifier("pgVectorEmbeddingStore") EmbeddingStore<TextSegment> embeddingStore,
-            ContentRetriever contentRetriever
-    ) {
-        this.embeddingModel = embeddingModel;
-        this.embeddingStore = embeddingStore;
-        
-        // Create RAG-enabled AI Service
-        this.ragAssistant = AiServices.builder(RagAssistant.class)
-                .chatLanguageModel(chatLanguageModel)
-                .contentRetriever(contentRetriever)  // This enables automatic RAG!
-                .build();
-        
-        log.info("RagService initialized with:");
-        log.info("  - Embedding Store: {}", embeddingStore.getClass().getSimpleName());
-        log.info("  - Content Retriever: {}", contentRetriever.getClass().getSimpleName());
-        log.info("  - RAG Assistant: ENABLED (automatic retrieval + generation)");
-    }
 
     /**
      * Ingest documents into the embedding store
@@ -103,16 +66,63 @@ public class RagService {
     }
 
     /**
-     * Query using RAG - AUTOMATIC with AI Services!
-     * No manual prompt building needed!
+     * Query using RAG - Manual Implementation
+     * Shows each step of the RAG pipeline
      */
     public String query(String question) {
         log.info("RAG query: {}", question);
-        
-        String response = ragAssistant.answer(question);
-        
-        log.info("RAG response: {}", response);
-        return response;
+
+        // Step 1: Embed the question
+        log.info("Step 1: Embedding the question...");
+        Embedding questionEmbedding = embeddingModel.embed(question).content();
+
+        // Step 2: Search for relevant documents
+        log.info("Step 2: Searching for relevant documents...");
+        int maxResults = 3;
+        double minScore = 0.3;
+        List<EmbeddingMatch<TextSegment>> relevantMatches = embeddingStore.findRelevant(
+                questionEmbedding,
+                maxResults,
+                minScore
+        );
+
+        log.info("Found {} relevant documents", relevantMatches.size());
+
+        // Step 3: Extract context from relevant documents
+        String context = relevantMatches.stream()
+                .map(match -> match.embedded().text())
+                .collect(Collectors.joining("\n\n"));
+
+        log.info("Context extracted: {} characters", context.length());
+
+        // Step 4: Build prompt with context
+        String prompt = buildPrompt(question, context);
+        log.info("Prompt built with context");
+
+        // Step 5: Generate response using LLM
+        log.info("Step 5: Generating response...");
+        Response<AiMessage> response = chatLanguageModel.generate(UserMessage.from(prompt));
+        String answer = response.content().text();
+
+        log.info("RAG response generated: {}", answer);
+        return answer;
+    }
+
+    /**
+     * Build a prompt that includes the context and question
+     */
+    private String buildPrompt(String question, String context) {
+        return String.format("""
+                Use the following context to answer the question.
+                If the context doesn't contain the answer, say "I don't have enough information to answer that question."
+                
+                Context:
+                %s
+                
+                Question: %s
+                
+                Answer:
+                """, context, question);
     }
 
     /**

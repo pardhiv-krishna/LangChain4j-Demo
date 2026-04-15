@@ -103,7 +103,7 @@ public class DemoController {
         } catch (Exception e) {
             results.put("status", "error");
             results.put("error", e.getMessage());
-            results.put("note", "Make sure to set OPENAI_API_KEY environment variable");
+            results.put("note", "Make sure GEMINI_API_KEY is set in .env file");
         }
 
         return ResponseEntity.ok(results);

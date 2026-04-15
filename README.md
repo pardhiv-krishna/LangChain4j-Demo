@@ -37,7 +37,7 @@ Context-aware responses using document embeddings.
 
 - Java 17 or higher
 - Maven 3.6+
-- Gemini API key (for LLM access)
+- Google Gemini API key ([Get one here](https://makersuite.google.com/app/apikey))
 
 ## 🔧 Setup
 
@@ -46,18 +46,19 @@ Context-aware responses using document embeddings.
 cd /Users/pardhivkrishna/JUG
 ```
 
-### 2. Set OpenAI API Key
+### 2. Set Gemini API Key
 
-**Option A: Environment Variable (Recommended)**
+Create a `.env` file in the project root:
 ```bash
-export OPENAI_API_KEY=your-api-key-here
+cp .env.example .env
 ```
 
-**Option B: Application Properties**
-Edit `src/main/resources/application.properties`:
+Edit `.env` and add your Gemini API key:
 ```properties
-openai.api.key=your-api-key-here
+GEMINI_API_KEY=your-gemini-api-key-here
 ```
+
+> **Note**: The `.env` file is gitignored for security. Never commit API keys to version control!
 
 ### 3. Build the Project
 ```bash
@@ -235,9 +236,9 @@ langchain4j-demo/
 ### 1. ChatLanguageModel
 The core interface for interacting with LLMs:
 ```java
-ChatLanguageModel model = OpenAiChatModel.builder()
+ChatLanguageModel model = GoogleAiGeminiChatModel.builder()
     .apiKey(apiKey)
-    .modelName("gpt-3.5-turbo")
+    .modelName("gemini-2.5-flash")
     .build();
 
 String response = model.generate("Your message");
@@ -275,17 +276,26 @@ Embedding embedding = embeddingModel.embed("Your text").content();
 
 - [LangChain4j Documentation](https://docs.langchain4j.dev/)
 - [LangChain4j GitHub](https://github.com/langchain4j/langchain4j)
-- [OpenAI API Documentation](https://platform.openai.com/docs)
+- [Google Gemini API Documentation](https://ai.google.dev/gemini-api/docs)
 
-## 🎓 Knowledge Sharing Tips
+## 🏷️ Git Tags - Learning Checkpoints
 
-When presenting this demo:
+This repository includes Git tags marking key development stages. Use these to explore the project step-by-step:
 
-1. **Start Simple**: Begin with SimpleChatService to show basic LLM interaction
-2. **Show Structure**: Demonstrate AI Services for type-safe interfaces
-3. **Explain RAG**: Walk through the RAG pipeline step-by-step
-4. **Live Demo**: Use the `/api/demo/all` endpoint for a complete walkthrough
-5. **Interactive**: Let attendees try different queries and see responses
+### View All Tags
+```bash
+git tag -n
+```
+
+### Checkout a Specific Tag
+```bash
+git checkout <tag-name>
+```
+
+### Available Checkpoints
+Each tag represents a complete (but slightly different), working state of the application.
+
+> **Tip**: After checking out a tag, read the commit message for details about what was implemented at that stage.
 
 ## 🛠️ Troubleshooting
 
@@ -295,10 +305,11 @@ If you see compilation errors related to Lombok:
 mvn clean install -U
 ```
 
-### OpenAI API Errors
-- Verify your API key is set correctly
-- Check your OpenAI account has credits
-- Ensure you're using a valid model name
+### Gemini API Errors
+- Verify your API key is set correctly in `.env` file
+- Check your Google Cloud account has Gemini API enabled
+- Ensure you're using a valid model name (e.g., `gemini-2.5-flash`)
+- Verify the `.env` file is in the project root directory
 
 ### Port Already in Use
 Change the port in `application.properties`:
@@ -306,27 +317,6 @@ Change the port in `application.properties`:
 server.port=8081
 ```
 
-## 📝 Notes
-
-- The application uses an in-memory embedding store (data is lost on restart)
-- For production, use a persistent vector database (Pinecone, Weaviate, etc.)
-- The local embedding model (all-MiniLM-L6-v2) runs without API calls
-- Adjust temperature and other model parameters in `LangChain4jConfig.java`
-
-## 🤝 Contributing
-
-This is a demo project for knowledge sharing. Feel free to:
-- Add more examples
-- Improve documentation
-- Add tests
-- Enhance error handling
-
-## 📄 License
-
-This project is for educational purposes.
-
----
-
-**Happy Learning! 🚀**
+**Happy Coding! 🚀**
 
 For questions or issues, please refer to the [LangChain4j documentation](https://docs.langchain4j.dev/).
