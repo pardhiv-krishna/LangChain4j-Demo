@@ -7,15 +7,17 @@ import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2Embedding
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.time.Duration;
 
 /**
  * Configuration class for LangChain4j components with Google Gemini
- * Basic version with in-memory embedding store
+ * Supports both in-memory and PostgreSQL vector stores
  */
 @Configuration
 public class LangChain4jConfig {
@@ -56,8 +58,34 @@ public class LangChain4jConfig {
      * This stores document embeddings in RAM for demo/testing purposes
      * Data is lost when application restarts
      */
-    @Bean
-    public EmbeddingStore<TextSegment> embeddingStore() {
+    @Bean("inMemoryEmbeddingStore")
+    public EmbeddingStore<TextSegment> inMemoryEmbeddingStore() {
         return new InMemoryEmbeddingStore<>();
+    }
+
+    /**
+     * Configure the PgVector Embedding Store (Primary)
+     * This stores document embeddings in PostgreSQL with pgvector extension
+     * Data persists across application restarts
+     *
+     * Prerequisites:
+     * 1. PostgreSQL with pgvector extension installed
+     * 2. Database created: CREATE DATABASE rag_demo;
+     * 3. Extension enabled: CREATE EXTENSION vector;
+     */
+    @Bean("pgVectorEmbeddingStore")
+    @Primary
+    public EmbeddingStore<TextSegment> pgVectorEmbeddingStore() {
+        return PgVectorEmbeddingStore.builder()
+                .host("localhost")
+                .port(5433) // Default PostgreSQL port would be 5432. But I configured it to 5433
+                .database("rag_demo")
+                .user("postgres")
+                .password("mysecretpassword")
+                .table("rag_documents")
+                .dimension(384)  // Must match embedding model dimension
+                .createTable(true)
+                .dropTableFirst(false)
+                .build();
     }
 }
