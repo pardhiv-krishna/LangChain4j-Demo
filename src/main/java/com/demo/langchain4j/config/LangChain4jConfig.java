@@ -5,6 +5,8 @@ import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore;
@@ -86,6 +88,23 @@ public class LangChain4jConfig {
                 .dimension(384)  // Must match embedding model dimension
                 .createTable(true)
                 .dropTableFirst(false)
+                .build();
+    }
+
+    /**
+     * Configure ContentRetriever for automatic RAG
+     * This handles embedding queries and retrieving relevant content automatically
+     */
+    @Bean
+    public ContentRetriever contentRetriever(
+            EmbeddingStore<TextSegment> embeddingStore,
+            EmbeddingModel embeddingModel) {
+        
+        return EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(embeddingStore)
+                .embeddingModel(embeddingModel)
+                .maxResults(3)
+                .minScore(0.3)
                 .build();
     }
 }
