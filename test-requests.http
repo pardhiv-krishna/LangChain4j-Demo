@@ -63,7 +63,7 @@ Content-Type: {{contentType}}
   "name": "Pardhiv"
 }
 
-### Translate to Spanish
+### Translate to Malayalam
 POST {{baseUrl}}/api/chat/translate
 Content-Type: {{contentType}}
 

@@ -12,6 +12,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
+import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,28 +40,23 @@ public class RagService {
     private final EmbeddingStore<TextSegment> embeddingStore;
 
     /**
-     * Ingest documents into the embedding store
-     * This splits documents into chunks and stores their embeddings
+     * Ingest documents using the Langchain4j EmbeddingStoreIngestor
      */
     public void ingestDocuments(List<Document> documents) {
-        log.info("Ingesting {} documents", documents.size());
+        log.info("Ingesting {} documents using EmbeddingStoreIngestor", documents.size());
 
-        // Split documents into smaller chunks for better retrieval
-        DocumentSplitter splitter = DocumentSplitters.recursive(
-                300,  // max chunk size in characters
-                50    // overlap between chunks
-        );
+        // Define your chunking strategy
+        DocumentSplitter splitter = DocumentSplitters.recursive(300, 50);
 
-        for (Document document : documents) {
-            List<TextSegment> segments = splitter.split(document);
-            log.info("Document split into {} segments", segments.size());
+        // Build the Ingestor pipeline
+        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+                .documentSplitter(splitter)
+                .embeddingModel(embeddingModel)
+                .embeddingStore(embeddingStore)
+                .build();
 
-            // Generate embeddings for each segment
-            for (TextSegment segment : segments) {
-                Embedding embedding = embeddingModel.embed(segment).content();
-                embeddingStore.add(embedding, segment);
-            }
-        }
+        // Execute the ingestion
+        ingestor.ingest(documents);
 
         log.info("Successfully ingested all documents");
     }
