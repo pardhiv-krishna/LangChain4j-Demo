@@ -77,8 +77,8 @@ public class DemoController {
                     "into Java applications. It provides abstractions and implementations for common LLM use cases."
             ));
             sampleDocs.add(Document.from(
-                    "RAG (Retrieval Augmented Generation) is a technique that combines information retrieval " +
-                    "with text generation. It retrieves relevant documents and uses them as context for the LLM."
+                    "Pardhiv Krishna is a software engineer based in India. " +
+                    "His favorite cricketer is Virat Kohli."
             ));
             sampleDocs.add(Document.from(
                     "Vector embeddings are numerical representations of text that capture semantic meaning. " +
@@ -87,7 +87,7 @@ public class DemoController {
 
             ragService.ingestDocuments(sampleDocs);
 
-            String ragQuery = "What is RAG?";
+            String ragQuery = "Who is the favorite cricketer of Pardhiv?";
             String ragAnswer = ragService.query(ragQuery);
 
             results.put("5_rag_demo", Map.of(

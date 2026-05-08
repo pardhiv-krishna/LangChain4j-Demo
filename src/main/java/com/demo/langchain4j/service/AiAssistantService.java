@@ -20,7 +20,7 @@ public class AiAssistantService {
     private final Assistant assistant;
 
     public AiAssistantService(ChatLanguageModel chatLanguageModel) {
-        // Create an AI Service implementation
+        // Instantiating the Assistant interface
         this.assistant = AiServices.create(Assistant.class, chatLanguageModel);
     }
 
